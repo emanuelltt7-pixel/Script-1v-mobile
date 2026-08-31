@@ -1,6 +1,6 @@
 -- ============================================
--- 💎 PAINEL PREMIUM ULTRA - FINAL 💎
--- FUNDO PRETO | TEXTO BRANCO | 19 FUNÇÕES
+-- 💎 PAINEL - 10% PRETO | CONTRASTE 40% 💎
+-- FUNDO TRANSPARENTE | TEXTO BRANCO | GRANDE
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -13,26 +13,39 @@ local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 
 -- ============================================
--- CORES - 100% CONTRASTE
+-- CORES - FUNDO 10% PRETO | TEXTO 100% BRANCO
 -- ============================================
 local COLORS = {
-    Background = Color3.fromRGB(0, 0, 0),      -- FUNDO PRETO
-    Card = Color3.fromRGB(20, 20, 20),         -- CINZA ESCURO
-    CardHover = Color3.fromRGB(40, 40, 40),    -- CINZA MÉDIO
-    Border = Color3.fromRGB(255, 255, 255),    -- BRANCO
-    Text = Color3.fromRGB(255, 255, 255),      -- BRANCO
-    TextSecondary = Color3.fromRGB(200, 200, 200), -- CINZA CLARO
-    Success = Color3.fromRGB(0, 255, 100),     -- VERDE NEON
-    Danger = Color3.fromRGB(255, 60, 60),      -- VERMELHO NEON
-    Combat = Color3.fromRGB(255, 60, 60),      -- VERMELHO
-    Visual = Color3.fromRGB(0, 200, 255),      -- AZUL
-    Movement = Color3.fromRGB(0, 255, 100),    -- VERDE
-    Power = Color3.fromRGB(255, 210, 0),       -- AMARELO
-    Weapon = Color3.fromRGB(255, 150, 0),      -- LARANJA
+    -- Fundo 10% PRETO (transparente)
+    Background = Color3.fromRGB(0, 0, 0),
+    BackgroundTransparency = 0.90, -- 10% visível, 90% transparente
+    
+    -- Botões 20% PRETO
+    Card = Color3.fromRGB(20, 20, 20),
+    CardTransparency = 0.80,
+    
+    -- Bordas 40% BRANCAS
+    Border = Color3.fromRGB(255, 255, 255),
+    BorderTransparency = 0.60, -- 40% visível
+    
+    -- Texto 100% BRANCO
+    Text = Color3.fromRGB(255, 255, 255),
+    TextSecondary = Color3.fromRGB(220, 220, 220),
+    
+    -- Cores das categorias (NEON)
+    Combat = Color3.fromRGB(255, 60, 60),
+    Weapon = Color3.fromRGB(255, 150, 0),
+    Visual = Color3.fromRGB(0, 200, 255),
+    Movement = Color3.fromRGB(0, 255, 100),
+    Power = Color3.fromRGB(255, 210, 0),
+    
+    -- Status
+    Success = Color3.fromRGB(0, 255, 100),
+    Danger = Color3.fromRGB(255, 60, 60),
 }
 
 -- ============================================
--- VARIÁVEIS
+-- VARIÁVEIS DAS FUNÇÕES
 -- ============================================
 local aimbotActive = false
 local aimbotConnection = nil
@@ -84,7 +97,8 @@ floatBtn.Text = "⚡"
 floatBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 floatBtn.Font = Enum.Font.GothamBold
 floatBtn.TextSize = 34
-floatBtn.BorderSizePixel = 3
+floatBtn.BorderSizePixel = 2
+floatBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
 floatBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
 floatBtn.Parent = screenGui
 floatBtn.ZIndex = 999
@@ -98,9 +112,11 @@ local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 420, 0, 620)
 mainFrame.Position = UDim2.new(0.5, -210, 0.5, -310)
 mainFrame.BackgroundColor3 = COLORS.Background
-mainFrame.BackgroundTransparency = 0
-mainFrame.BorderSizePixel = 3
-mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+mainFrame.BackgroundTransparency = COLORS.BackgroundTransparency -- 10% PRETO
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = COLORS.Border
+mainFrame.BorderColor3 = COLORS.Border
+mainFrame.BorderTransparency = COLORS.BorderTransparency -- 40% visível
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 mainFrame.Visible = false
@@ -113,10 +129,12 @@ mainCorner.Parent = mainFrame
 -- ========== HEADER ==========
 local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 75)
-header.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-header.BackgroundTransparency = 0
+header.BackgroundColor3 = COLORS.Background
+header.BackgroundTransparency = COLORS.BackgroundTransparency
 header.BorderSizePixel = 2
-header.BorderColor3 = Color3.fromRGB(255, 255, 255)
+header.BorderColor3 = COLORS.Border
+header.BorderColor3 = COLORS.Border
+header.BorderTransparency = COLORS.BorderTransparency
 header.Parent = mainFrame
 
 local headerCorner = Instance.new("UICorner")
@@ -128,9 +146,9 @@ title.Size = UDim2.new(0.6, 0, 0.55, 0)
 title.Position = UDim2.new(0.12, 0, 0.1, 0)
 title.BackgroundTransparency = 1
 title.Text = "⚡ PREMIUM ULTRA"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextColor3 = COLORS.Text
 title.Font = Enum.Font.GothamBold
-title.TextSize = 24
+title.TextSize = 24 -- GRANDE
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
 
@@ -139,7 +157,7 @@ subTitle.Size = UDim2.new(0.6, 0, 0.35, 0)
 subTitle.Position = UDim2.new(0.12, 0, 0.6, 0)
 subTitle.BackgroundTransparency = 1
 subTitle.Text = "19 FUNÇÕES PODEROSAS"
-subTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+subTitle.TextColor3 = COLORS.TextSecondary
 subTitle.Font = Enum.Font.GothamBold
 subTitle.TextSize = 14
 subTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -150,23 +168,25 @@ version.Size = UDim2.new(0.15, 0, 0.35, 0)
 version.Position = UDim2.new(0.82, 0, 0.6, 0)
 version.BackgroundTransparency = 1
 version.Text = "v5.0"
-version.TextColor3 = Color3.fromRGB(150, 150, 150)
+version.TextColor3 = COLORS.TextSecondary
 version.Font = Enum.Font.GothamBold
-version.TextSize = 12
+version.TextSize = 13
 version.TextXAlignment = Enum.TextXAlignment.Right
 version.Parent = header
 
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 42, 0, 42)
 closeBtn.Position = UDim2.new(1, -52, 0, 16)
-closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-closeBtn.BackgroundTransparency = 0.1
+closeBtn.BackgroundColor3 = COLORS.Danger
+closeBtn.BackgroundTransparency = 0.7
 closeBtn.Text = "✕"
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextColor3 = COLORS.Text
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 20
 closeBtn.BorderSizePixel = 2
-closeBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.BorderColor3 = COLORS.Border
+closeBtn.BorderColor3 = COLORS.Border
+closeBtn.BorderTransparency = COLORS.BorderTransparency
 closeBtn.Parent = header
 
 local closeCorner = Instance.new("UICorner")
@@ -182,13 +202,14 @@ local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(1, 0, 1, -75)
 scrollFrame.Position = UDim2.new(0, 0, 0, 75)
 scrollFrame.BackgroundColor3 = COLORS.Background
-scrollFrame.BackgroundTransparency = 0
+scrollFrame.BackgroundTransparency = COLORS.BackgroundTransparency
 scrollFrame.BorderSizePixel = 0
 scrollFrame.Parent = mainFrame
 scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 2100)
 scrollFrame.ScrollBarThickness = 5
-scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-scrollFrame.ScrollBarImageTransparency = 0.3
+scrollFrame.ScrollBarImageColor3 = COLORS.Border
+scrollFrame.ScrollBarImageColor3 = COLORS.Border
+scrollFrame.ScrollBarImageTransparency = 0.6
 
 -- ============================================
 -- FUNÇÕES DE CRIAÇÃO
@@ -199,10 +220,12 @@ local function createCategory(parent, text, yPos, icon, color)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0.94, 0, 0, 42)
     frame.Position = UDim2.new(0.03, 0, yPos, 0)
-    frame.BackgroundColor3 = color or Color3.fromRGB(255, 255, 255)
-    frame.BackgroundTransparency = 0.15
+    frame.BackgroundColor3 = color
+    frame.BackgroundTransparency = 0.8
     frame.BorderSizePixel = 2
-    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    frame.BorderColor3 = COLORS.Border
+    frame.BorderColor3 = COLORS.Border
+    frame.BorderTransparency = COLORS.BorderTransparency
     frame.Parent = parent
     
     local frameCorner = Instance.new("UICorner")
@@ -214,9 +237,9 @@ local function createCategory(parent, text, yPos, icon, color)
     label.Position = UDim2.new(0.04, 0, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = icon .. "  " .. text
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextColor3 = COLORS.Text
     label.Font = Enum.Font.GothamBold
-    label.TextSize = 18
+    label.TextSize = 18 -- GRANDE
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
     
@@ -224,14 +247,16 @@ local function createCategory(parent, text, yPos, icon, color)
 end
 
 -- ========== CRIAR TOGGLE ==========
-local function createToggle(parent, text, yPos, color, icon, callback)
+local function createPremiumToggle(parent, text, yPos, color, icon, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0.94, 0, 0, 54)
+    frame.Size = UDim2.new(0.94, 0, 0, 55) -- MAIOR
     frame.Position = UDim2.new(0.03, 0, yPos, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    frame.BackgroundTransparency = 0
+    frame.BackgroundColor3 = COLORS.Card
+    frame.BackgroundTransparency = COLORS.CardTransparency -- 20% PRETO
     frame.BorderSizePixel = 2
-    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    frame.BorderColor3 = COLORS.Border
+    frame.BorderColor3 = COLORS.Border
+    frame.BorderTransparency = COLORS.BorderTransparency -- 40% visível
     frame.Parent = parent
     
     local frameCorner = Instance.new("UICorner")
@@ -240,13 +265,13 @@ local function createToggle(parent, text, yPos, color, icon, callback)
     
     -- Ícone
     local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 40, 1, 0)
+    iconLabel.Size = UDim2.new(0, 45, 1, 0)
     iconLabel.Position = UDim2.new(0.02, 0, 0, 0)
     iconLabel.BackgroundTransparency = 1
     iconLabel.Text = icon or "◆"
-    iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    iconLabel.TextColor3 = COLORS.Text
     iconLabel.Font = Enum.Font.Gotham
-    iconLabel.TextSize = 24
+    iconLabel.TextSize = 24 -- GRANDE
     iconLabel.TextXAlignment = Enum.TextXAlignment.Center
     iconLabel.Parent = frame
     
@@ -256,21 +281,23 @@ local function createToggle(parent, text, yPos, color, icon, callback)
     btn.Position = UDim2.new(0.12, 0, 0, 0)
     btn.BackgroundTransparency = 1
     btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = COLORS.Text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 17
+    btn.TextSize = 17 -- GRANDE
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.Parent = frame
     
     -- Status Toggle
     local status = Instance.new("Frame")
-    status.Size = UDim2.new(0, 52, 0, 30)
-    status.Position = UDim2.new(0.86, 0, 0.22, 0)
-    status.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-    status.BackgroundTransparency = 0.1
+    status.Size = UDim2.new(0, 55, 0, 30) -- MAIOR
+    status.Position = UDim2.new(0.87, 0, 0.22, 0)
+    status.BackgroundColor3 = COLORS.Danger
+    status.BackgroundTransparency = 0.6
     status.BorderSizePixel = 2
-    status.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    status.BorderColor3 = COLORS.Border
+    status.BorderColor3 = COLORS.Border
+    status.BorderTransparency = COLORS.BorderTransparency
     status.Parent = frame
     
     local statusCorner = Instance.new("UICorner")
@@ -279,8 +306,8 @@ local function createToggle(parent, text, yPos, color, icon, callback)
     
     local statusGlow = Instance.new("Frame")
     statusGlow.Size = UDim2.new(1, 0, 1, 0)
-    statusGlow.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-    statusGlow.BackgroundTransparency = 0.6
+    statusGlow.BackgroundColor3 = COLORS.Danger
+    statusGlow.BackgroundTransparency = 0.7
     statusGlow.BorderSizePixel = 0
     statusGlow.Parent = status
     
@@ -292,9 +319,9 @@ local function createToggle(parent, text, yPos, color, icon, callback)
     statusText.Size = UDim2.new(1, 0, 1, 0)
     statusText.BackgroundTransparency = 1
     statusText.Text = "OFF"
-    statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    statusText.TextColor3 = COLORS.Text
     statusText.Font = Enum.Font.GothamBold
-    statusText.TextSize = 13
+    statusText.TextSize = 13 -- GRANDE
     statusText.Parent = status
     
     local active = false
@@ -304,25 +331,27 @@ local function createToggle(parent, text, yPos, color, icon, callback)
         callback(active)
         
         if active then
-            status.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-            statusGlow.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+            status.BackgroundColor3 = COLORS.Success
+            statusGlow.BackgroundColor3 = COLORS.Success
             statusText.Text = "ON"
-            frame.BorderColor3 = Color3.fromRGB(0, 255, 100)
+            frame.BorderColor3 = COLORS.Success
+            frame.BorderColor3 = COLORS.Success
         else
-            status.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-            statusGlow.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+            status.BackgroundColor3 = COLORS.Danger
+            statusGlow.BackgroundColor3 = COLORS.Danger
             statusText.Text = "OFF"
-            frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+            frame.BorderColor3 = COLORS.Border
+            frame.BorderColor3 = COLORS.Border
         end
     end)
     
     btn.MouseEnter:Connect(function()
-        TweenService:Create(frame, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+        TweenService:Create(frame, TweenInfo.new(0.15), {BackgroundTransparency = 0.7}):Play()
     end)
     
     btn.MouseLeave:Connect(function()
         if not active then
-            TweenService:Create(frame, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(20, 20, 20)}):Play()
+            TweenService:Create(frame, TweenInfo.new(0.15), {BackgroundTransparency = COLORS.CardTransparency}):Play()
         end
     end)
     
@@ -330,14 +359,16 @@ local function createToggle(parent, text, yPos, color, icon, callback)
 end
 
 -- ========== CRIAR SLIDER ==========
-local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal, callback)
+local function createPremiumSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0.94, 0, 0, 54)
+    frame.Size = UDim2.new(0.94, 0, 0, 55) -- MAIOR
     frame.Position = UDim2.new(0.03, 0, yPos, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    frame.BackgroundTransparency = 0
+    frame.BackgroundColor3 = COLORS.Card
+    frame.BackgroundTransparency = COLORS.CardTransparency
     frame.BorderSizePixel = 2
-    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    frame.BorderColor3 = COLORS.Border
+    frame.BorderColor3 = COLORS.Border
+    frame.BorderTransparency = COLORS.BorderTransparency
     frame.Parent = parent
     
     local frameCorner = Instance.new("UICorner")
@@ -345,13 +376,13 @@ local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal
     frameCorner.Parent = frame
     
     local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 35, 1, 0)
+    iconLabel.Size = UDim2.new(0, 40, 1, 0)
     iconLabel.Position = UDim2.new(0.02, 0, 0, 0)
     iconLabel.BackgroundTransparency = 1
     iconLabel.Text = icon or "◆"
-    iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    iconLabel.TextColor3 = COLORS.Text
     iconLabel.Font = Enum.Font.Gotham
-    iconLabel.TextSize = 20
+    iconLabel.TextSize = 22 -- GRANDE
     iconLabel.TextXAlignment = Enum.TextXAlignment.Center
     iconLabel.Parent = frame
     
@@ -360,9 +391,9 @@ local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal
     label.Position = UDim2.new(0.12, 0, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = text
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextColor3 = COLORS.Text
     label.Font = Enum.Font.GothamBold
-    label.TextSize = 16
+    label.TextSize = 16 -- GRANDE
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
     
@@ -371,23 +402,25 @@ local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal
     valueLabel.Position = UDim2.new(0.50, 0, 0, 0)
     valueLabel.BackgroundTransparency = 1
     valueLabel.Text = tostring(defaultVal)
-    valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    valueLabel.TextColor3 = COLORS.Text
     valueLabel.Font = Enum.Font.GothamBold
-    valueLabel.TextSize = 18
+    valueLabel.TextSize = 19 -- GRANDE
     valueLabel.TextXAlignment = Enum.TextXAlignment.Center
     valueLabel.Parent = frame
     
     local minusBtn = Instance.new("TextButton")
-    minusBtn.Size = UDim2.new(0, 32, 0, 32)
-    minusBtn.Position = UDim2.new(0.72, 0, 0.20, 0)
-    minusBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-    minusBtn.BackgroundTransparency = 0.2
+    minusBtn.Size = UDim2.new(0, 35, 0, 35) -- MAIOR
+    minusBtn.Position = UDim2.new(0.72, 0, 0.18, 0)
+    minusBtn.BackgroundColor3 = COLORS.Danger
+    minusBtn.BackgroundTransparency = 0.6
     minusBtn.Text = "−"
-    minusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minusBtn.TextColor3 = COLORS.Text
     minusBtn.Font = Enum.Font.GothamBold
-    minusBtn.TextSize = 18
+    minusBtn.TextSize = 20 -- GRANDE
     minusBtn.BorderSizePixel = 2
-    minusBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    minusBtn.BorderColor3 = COLORS.Border
+    minusBtn.BorderColor3 = COLORS.Border
+    minusBtn.BorderTransparency = COLORS.BorderTransparency
     minusBtn.Parent = frame
     
     local minusCorner = Instance.new("UICorner")
@@ -395,16 +428,18 @@ local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal
     minusCorner.Parent = minusBtn
     
     local plusBtn = Instance.new("TextButton")
-    plusBtn.Size = UDim2.new(0, 32, 0, 32)
-    plusBtn.Position = UDim2.new(0.85, 0, 0.20, 0)
-    plusBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-    plusBtn.BackgroundTransparency = 0.2
+    plusBtn.Size = UDim2.new(0, 35, 0, 35) -- MAIOR
+    plusBtn.Position = UDim2.new(0.85, 0, 0.18, 0)
+    plusBtn.BackgroundColor3 = COLORS.Success
+    plusBtn.BackgroundTransparency = 0.6
     plusBtn.Text = "+"
-    plusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    plusBtn.TextColor3 = COLORS.Text
     plusBtn.Font = Enum.Font.GothamBold
-    plusBtn.TextSize = 18
+    plusBtn.TextSize = 20 -- GRANDE
     plusBtn.BorderSizePixel = 2
-    plusBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    plusBtn.BorderColor3 = COLORS.Border
+    plusBtn.BorderColor3 = COLORS.Border
+    plusBtn.BorderTransparency = COLORS.BorderTransparency
     plusBtn.Parent = frame
     
     local plusCorner = Instance.new("UICorner")
@@ -429,16 +464,16 @@ local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal
 end
 
 -- ============================================
--- CONSTRUÇÃO DO PAINEL - 19 FUNÇÕES
+-- CONSTRUÇÃO DO PAINEL
 -- ============================================
 
 local yPos = 0.01
 
--- ===== CATEGORIA 1: ⚔️ COMBATE (4) =====
+-- COMBATE (4)
 createCategory(scrollFrame, "COMBATE (4)", yPos, "⚔️", COLORS.Combat)
 yPos = yPos + 0.065
 
-createToggle(scrollFrame, "AIMBOT 100%", yPos, COLORS.Combat, "🎯", function(active)
+createPremiumToggle(scrollFrame, "AIMBOT 100%", yPos, COLORS.Combat, "🎯", function(active)
     aimbotActive = active
     if active then
         aimbotConnection = RunService.Heartbeat:Connect(function()
@@ -486,26 +521,26 @@ createToggle(scrollFrame, "AIMBOT 100%", yPos, COLORS.Combat, "🎯", function(a
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "SUPER FAR", yPos, COLORS.Combat, "🔭", function(active)
+createPremiumToggle(scrollFrame, "SUPER FAR", yPos, COLORS.Combat, "🔭", function(active)
     superFarActive = active
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "SILENT AIM", yPos, COLORS.Combat, "🔇", function(active)
+createPremiumToggle(scrollFrame, "SILENT AIM", yPos, COLORS.Combat, "🔇", function(active)
     silentAimActive = active
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "INSTANT KILL", yPos, COLORS.Combat, "💀", function(active)
+createPremiumToggle(scrollFrame, "INSTANT KILL", yPos, COLORS.Combat, "💀", function(active)
     instantKillActive = active
 end)
 yPos = yPos + 0.09
 
--- ===== CATEGORIA 2: 🔫 ARMAS (4) =====
+-- ARMAS (4)
 createCategory(scrollFrame, "ARMAS (4)", yPos, "🔫", COLORS.Weapon)
 yPos = yPos + 0.065
 
-createToggle(scrollFrame, "WALLBANG", yPos, COLORS.Weapon, "🧱", function(active)
+createPremiumToggle(scrollFrame, "WALLBANG", yPos, COLORS.Weapon, "🧱", function(active)
     wallbangActive = active
     if active then
         for _, obj in pairs(Workspace:GetDescendants()) do
@@ -529,17 +564,17 @@ createToggle(scrollFrame, "WALLBANG", yPos, COLORS.Weapon, "🧱", function(acti
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "NO RECOIL", yPos, COLORS.Weapon, "🔫", function(active)
+createPremiumToggle(scrollFrame, "NO RECOIL", yPos, COLORS.Weapon, "🔫", function(active)
     noRecoilActive = active
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "NO SPREAD", yPos, COLORS.Weapon, "🎯", function(active)
+createPremiumToggle(scrollFrame, "NO SPREAD", yPos, COLORS.Weapon, "🎯", function(active)
     noSpreadActive = active
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "MUNIÇÃO INFINITA", yPos, COLORS.Weapon, "🔫", function(active)
+createPremiumToggle(scrollFrame, "MUNIÇÃO INFINITA", yPos, COLORS.Weapon, "🔫", function(active)
     infiniteAmmoActive = active
     if active then
         game:GetService("RunService").Heartbeat:Connect(function()
@@ -562,11 +597,11 @@ createToggle(scrollFrame, "MUNIÇÃO INFINITA", yPos, COLORS.Weapon, "🔫", fun
 end)
 yPos = yPos + 0.09
 
--- ===== CATEGORIA 3: 👁️ VISUAIS (3) =====
+-- VISUAIS (3)
 createCategory(scrollFrame, "VISUAIS (3)", yPos, "👁️", COLORS.Visual)
 yPos = yPos + 0.065
 
-createToggle(scrollFrame, "ESP BOX", yPos, COLORS.Visual, "📦", function(active)
+createPremiumToggle(scrollFrame, "ESP BOX", yPos, COLORS.Visual, "📦", function(active)
     espActive = active
     if active then
         local function addESP(player)
@@ -605,7 +640,7 @@ createToggle(scrollFrame, "ESP BOX", yPos, COLORS.Visual, "📦", function(activ
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "INVISIBILIDADE", yPos, COLORS.Visual, "👻", function(active)
+createPremiumToggle(scrollFrame, "INVISIBILIDADE", yPos, COLORS.Visual, "👻", function(active)
     invisibleActive = active
     local char = LocalPlayer.Character
     if char then
@@ -618,7 +653,7 @@ createToggle(scrollFrame, "INVISIBILIDADE", yPos, COLORS.Visual, "👻", functio
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "VISÃO NOTURNA", yPos, COLORS.Visual, "🌙", function(active)
+createPremiumToggle(scrollFrame, "VISÃO NOTURNA", yPos, COLORS.Visual, "🌙", function(active)
     if active then
         Lighting.Ambient = Color3.fromRGB(100, 100, 150)
         Lighting.Brightness = 2
@@ -629,11 +664,11 @@ createToggle(scrollFrame, "VISÃO NOTURNA", yPos, COLORS.Visual, "🌙", functio
 end)
 yPos = yPos + 0.09
 
--- ===== CATEGORIA 4: 🏃 MOVIMENTO (4) =====
+-- MOVIMENTO (4)
 createCategory(scrollFrame, "MOVIMENTO (4)", yPos, "🏃", COLORS.Movement)
 yPos = yPos + 0.065
 
-createToggle(scrollFrame, "VELOCIDADE", yPos, COLORS.Movement, "💨", function(active)
+createPremiumToggle(scrollFrame, "VELOCIDADE", yPos, COLORS.Movement, "💨", function(active)
     speedActive = active
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
@@ -642,7 +677,7 @@ createToggle(scrollFrame, "VELOCIDADE", yPos, COLORS.Movement, "💨", function(
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "SUPER JUMP", yPos, COLORS.Movement, "⚡", function(active)
+createPremiumToggle(scrollFrame, "SUPER JUMP", yPos, COLORS.Movement, "⚡", function(active)
     jumpActive = active
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
@@ -651,7 +686,7 @@ createToggle(scrollFrame, "SUPER JUMP", yPos, COLORS.Movement, "⚡", function(a
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "FLY", yPos, COLORS.Movement, "🌊", function(active)
+createPremiumToggle(scrollFrame, "FLY", yPos, COLORS.Movement, "🌊", function(active)
     flyActive = active
     local char = LocalPlayer.Character
     if not char then return end
@@ -704,7 +739,7 @@ createToggle(scrollFrame, "FLY", yPos, COLORS.Movement, "🌊", function(active)
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "NO CLIP", yPos, COLORS.Movement, "🧱", function(active)
+createPremiumToggle(scrollFrame, "NO CLIP", yPos, COLORS.Movement, "🧱", function(active)
     noClipActive = active
     if active then
         noClipConnection = RunService.Heartbeat:Connect(function()
@@ -735,11 +770,11 @@ createToggle(scrollFrame, "NO CLIP", yPos, COLORS.Movement, "🧱", function(act
 end)
 yPos = yPos + 0.09
 
--- ===== CATEGORIA 5: 💥 PODERES (4) =====
+-- PODERES (4)
 createCategory(scrollFrame, "PODERES (4)", yPos, "💥", COLORS.Power)
 yPos = yPos + 0.065
 
-createToggle(scrollFrame, "GOD MODE", yPos, COLORS.Power, "🛡️", function(active)
+createPremiumToggle(scrollFrame, "GOD MODE", yPos, COLORS.Power, "🛡️", function(active)
     godModeActive = active
     local char = LocalPlayer.Character
     if char then
@@ -759,7 +794,7 @@ createToggle(scrollFrame, "GOD MODE", yPos, COLORS.Power, "🛡️", function(ac
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "ANTI-KICK", yPos, COLORS.Power, "🛡️", function(active)
+createPremiumToggle(scrollFrame, "ANTI-KICK", yPos, COLORS.Power, "🛡️", function(active)
     antiKickActive = active
     if active then
         LocalPlayer:GetPropertyChangedSignal("Parent"):Connect(function()
@@ -786,7 +821,7 @@ createToggle(scrollFrame, "ANTI-KICK", yPos, COLORS.Power, "🛡️", function(a
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "FREEZE PLAYERS", yPos, COLORS.Power, "🌀", function(active)
+createPremiumToggle(scrollFrame, "FREEZE PLAYERS", yPos, COLORS.Power, "🌀", function(active)
     freezeActive = active
     if active then
         RunService.Heartbeat:Connect(function()
@@ -804,7 +839,7 @@ createToggle(scrollFrame, "FREEZE PLAYERS", yPos, COLORS.Power, "🌀", function
 end)
 yPos = yPos + 0.08
 
-createToggle(scrollFrame, "EXPLODE PLAYERS", yPos, COLORS.Power, "💣", function(active)
+createPremiumToggle(scrollFrame, "EXPLODE PLAYERS", yPos, COLORS.Power, "💣", function(active)
     if active then
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
@@ -826,8 +861,11 @@ createToggle(scrollFrame, "EXPLODE PLAYERS", yPos, COLORS.Power, "💣", functio
 end)
 yPos = yPos + 0.09
 
--- ===== SLIDERS =====
-createSlider(scrollFrame, "VELOCIDADE", yPos, "⚡", 50, 500, 70, function(val)
+-- ============================================
+-- SLIDERS
+-- ============================================
+
+createPremiumSlider(scrollFrame, "VELOCIDADE", yPos, "⚡", 50, 500, 70, function(val)
     currentSpeed = val
     if speedActive then
         local char = LocalPlayer.Character
@@ -838,26 +876,28 @@ createSlider(scrollFrame, "VELOCIDADE", yPos, "⚡", 50, 500, 70, function(val)
 end)
 yPos = yPos + 0.08
 
-createSlider(scrollFrame, "FLY SPEED", yPos, "🚀", 30, 300, 60, function(val)
+createPremiumSlider(scrollFrame, "FLY SPEED", yPos, "🚀", 30, 300, 60, function(val)
     flySpeed = val
 end)
 yPos = yPos + 0.08
 
-createSlider(scrollFrame, "AIMBOT RANGE", yPos, "📏", 50, 500, 200, function(val)
+createPremiumSlider(scrollFrame, "AIMBOT RANGE", yPos, "📏", 50, 500, 200, function(val)
     CONFIG.AimbotRange = val
 end)
 yPos = yPos + 0.08
 
 -- ============================================
--- STATUS BAR
+-- STATUS BAR - FUNDO 10% PRETO
 -- ============================================
 local statusBar = Instance.new("Frame")
-statusBar.Size = UDim2.new(0.35, 0, 0, 32)
+statusBar.Size = UDim2.new(0.35, 0, 0, 35)
 statusBar.Position = UDim2.new(0.325, 0, 0.01, 0)
-statusBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-statusBar.BackgroundTransparency = 0
+statusBar.BackgroundColor3 = COLORS.Background
+statusBar.BackgroundTransparency = COLORS.BackgroundTransparency
 statusBar.BorderSizePixel = 2
-statusBar.BorderColor3 = Color3.fromRGB(255, 255, 255)
+statusBar.BorderColor3 = COLORS.Border
+statusBar.BorderColor3 = COLORS.Border
+statusBar.BorderTransparency = COLORS.BorderTransparency
 statusBar.Parent = screenGui
 statusBar.ZIndex = 998
 
@@ -869,9 +909,9 @@ local statusText = Instance.new("TextLabel")
 statusText.Size = UDim2.new(1, 0, 1, 0)
 statusText.BackgroundTransparency = 1
 statusText.Text = "◆ SYSTEM READY"
-statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusText.TextColor3 = COLORS.Text
 statusText.Font = Enum.Font.GothamBold
-statusText.TextSize = 15
+statusText.TextSize = 16 -- GRANDE
 statusText.Parent = statusBar
 
 -- ============================================
@@ -953,10 +993,10 @@ local function updateStatus()
     
     if #active > 0 then
         statusText.Text = "◆ " .. table.concat(active, " ")
-        statusText.TextColor3 = Color3.fromRGB(0, 255, 100)
+        statusText.TextColor3 = COLORS.Success
     else
         statusText.Text = "◆ SYSTEM READY"
-        statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        statusText.TextColor3 = COLORS.Text
     end
 end
 
@@ -967,10 +1007,15 @@ game:GetService("RunService").Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- PRINT FINAL
+-- INSTRUÇÕES
 -- ============================================
 print("========================================")
-print("💎 PAINEL FINALIZADO - 100% VISÍVEL!")
+print("💎 PAINEL 10% PRETO - 19 FUNÇÕES!")
+print("========================================")
+print("🔳 Fundo 10% PRETO (transparente)")
+print("🔲 Texto 100% BRANCO")
+print("📏 Tamanho GRANDE (16-22px)")
+print("🎯 Contraste 40%")
 print("========================================")
 print("⚔️ COMBATE (4): Aimbot, Far, Silent, Kill")
 print("🔫 ARMAS (4): Wallbang, Recoil, Spread, Ammo")
@@ -980,7 +1025,4 @@ print("💥 PODERES (4): God, Anti-Kick, Freeze, Explode")
 print("========================================")
 print("⚡ Clique em ⚡ para abrir")
 print("⌨️ F5 ou ESC para fechar")
-print("========================================")
-print("✅ FUNDO PRETO | TEXTO BRANCO | BORDAS BRANCAS")
-print("✅ 100% LEGÍVEL E VISÍVEL!")
 print("========================================")
