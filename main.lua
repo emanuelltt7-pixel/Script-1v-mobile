@@ -888,4 +888,5 @@ print("  🔄 SUAVIDADE: 1-100")
 print("  💨 VELOCIDADE: 50-5000")
 print("  🌊 VEL. VOO: 10-500")
 print("")
-print("⌨️  F5=Menu  F=Fly  G=God  K=Kill  L=Lock
+print("⌨️  F5=Menu  F=Fly  G=God  K=Kill  L=Lock")
+print("========================================")
