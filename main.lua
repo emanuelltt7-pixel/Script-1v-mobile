@@ -1,6 +1,6 @@
 -- ============================================
--- 💎 PAINEL PREMIUM - MODO 100% PRETO 💎
--- FUNDO PRETO | TEXTO BRANCO | BORDAS BRANCAS
+-- 💎 PAINEL PREMIUM ULTRA - FINAL 💎
+-- FUNDO PRETO | TEXTO BRANCO | 19 FUNÇÕES
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -13,38 +13,26 @@ local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 
 -- ============================================
--- CORES 100% CONTRASTE
+-- CORES - 100% CONTRASTE
 -- ============================================
 local COLORS = {
-    -- Fundo 100% PRETO
-    Background = Color3.fromRGB(0, 0, 0),
-    Card = Color3.fromRGB(20, 20, 20),
-    CardHover = Color3.fromRGB(40, 40, 40),
-    
-    -- Bordas BRANCAS
-    Border = Color3.fromRGB(255, 255, 255),
-    
-    -- Cores das funções (botões)
-    Primary = Color3.fromRGB(255, 255, 255),
-    Success = Color3.fromRGB(0, 255, 100),
-    Danger = Color3.fromRGB(255, 60, 60),
-    Warning = Color3.fromRGB(255, 210, 0),
-    Info = Color3.fromRGB(0, 200, 255),
-    
-    -- Textos BRANCOS
-    Text = Color3.fromRGB(255, 255, 255),
-    TextSecondary = Color3.fromRGB(200, 200, 200),
-    
-    -- Categorias com cores NEON
-    Combat = Color3.fromRGB(255, 60, 60),
-    Visual = Color3.fromRGB(0, 200, 255),
-    Movement = Color3.fromRGB(0, 255, 100),
-    Power = Color3.fromRGB(255, 210, 0),
-    Weapon = Color3.fromRGB(255, 150, 0),
+    Background = Color3.fromRGB(0, 0, 0),      -- FUNDO PRETO
+    Card = Color3.fromRGB(20, 20, 20),         -- CINZA ESCURO
+    CardHover = Color3.fromRGB(40, 40, 40),    -- CINZA MÉDIO
+    Border = Color3.fromRGB(255, 255, 255),    -- BRANCO
+    Text = Color3.fromRGB(255, 255, 255),      -- BRANCO
+    TextSecondary = Color3.fromRGB(200, 200, 200), -- CINZA CLARO
+    Success = Color3.fromRGB(0, 255, 100),     -- VERDE NEON
+    Danger = Color3.fromRGB(255, 60, 60),      -- VERMELHO NEON
+    Combat = Color3.fromRGB(255, 60, 60),      -- VERMELHO
+    Visual = Color3.fromRGB(0, 200, 255),      -- AZUL
+    Movement = Color3.fromRGB(0, 255, 100),    -- VERDE
+    Power = Color3.fromRGB(255, 210, 0),       -- AMARELO
+    Weapon = Color3.fromRGB(255, 150, 0),      -- LARANJA
 }
 
 -- ============================================
--- VARIÁVEIS DAS FUNÇÕES
+-- VARIÁVEIS
 -- ============================================
 local aimbotActive = false
 local aimbotConnection = nil
@@ -96,7 +84,7 @@ floatBtn.Text = "⚡"
 floatBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
 floatBtn.Font = Enum.Font.GothamBold
 floatBtn.TextSize = 34
-floatBtn.BorderSizePixel = 2
+floatBtn.BorderSizePixel = 3
 floatBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
 floatBtn.Parent = screenGui
 floatBtn.ZIndex = 999
@@ -142,7 +130,7 @@ title.BackgroundTransparency = 1
 title.Text = "⚡ PREMIUM ULTRA"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 22
+title.TextSize = 24
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
 
@@ -153,7 +141,7 @@ subTitle.BackgroundTransparency = 1
 subTitle.Text = "19 FUNÇÕES PODEROSAS"
 subTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
 subTitle.Font = Enum.Font.GothamBold
-subTitle.TextSize = 13
+subTitle.TextSize = 14
 subTitle.TextXAlignment = Enum.TextXAlignment.Left
 subTitle.Parent = header
 
@@ -209,7 +197,7 @@ scrollFrame.ScrollBarImageTransparency = 0.3
 -- ========== CRIAR CATEGORIA ==========
 local function createCategory(parent, text, yPos, icon, color)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0.94, 0, 0, 40)
+    frame.Size = UDim2.new(0.94, 0, 0, 42)
     frame.Position = UDim2.new(0.03, 0, yPos, 0)
     frame.BackgroundColor3 = color or Color3.fromRGB(255, 255, 255)
     frame.BackgroundTransparency = 0.15
@@ -228,7 +216,7 @@ local function createCategory(parent, text, yPos, icon, color)
     label.Text = icon .. "  " .. text
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.Font = Enum.Font.GothamBold
-    label.TextSize = 17
+    label.TextSize = 18
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
     
@@ -236,9 +224,9 @@ local function createCategory(parent, text, yPos, icon, color)
 end
 
 -- ========== CRIAR TOGGLE ==========
-local function createPremiumToggle(parent, text, yPos, color, icon, callback)
+local function createToggle(parent, text, yPos, color, icon, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0.94, 0, 0, 52)
+    frame.Size = UDim2.new(0.94, 0, 0, 54)
     frame.Position = UDim2.new(0.03, 0, yPos, 0)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     frame.BackgroundTransparency = 0
@@ -258,7 +246,7 @@ local function createPremiumToggle(parent, text, yPos, color, icon, callback)
     iconLabel.Text = icon or "◆"
     iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     iconLabel.Font = Enum.Font.Gotham
-    iconLabel.TextSize = 22
+    iconLabel.TextSize = 24
     iconLabel.TextXAlignment = Enum.TextXAlignment.Center
     iconLabel.Parent = frame
     
@@ -270,17 +258,17 @@ local function createPremiumToggle(parent, text, yPos, color, icon, callback)
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 16
+    btn.TextSize = 17
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.Parent = frame
     
     -- Status Toggle
     local status = Instance.new("Frame")
-    status.Size = UDim2.new(0, 50, 0, 28)
-    status.Position = UDim2.new(0.87, 0, 0.23, 0)
+    status.Size = UDim2.new(0, 52, 0, 30)
+    status.Position = UDim2.new(0.86, 0, 0.22, 0)
     status.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-    status.BackgroundTransparency = 0.2
+    status.BackgroundTransparency = 0.1
     status.BorderSizePixel = 2
     status.BorderColor3 = Color3.fromRGB(255, 255, 255)
     status.Parent = frame
@@ -306,7 +294,7 @@ local function createPremiumToggle(parent, text, yPos, color, icon, callback)
     statusText.Text = "OFF"
     statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
     statusText.Font = Enum.Font.GothamBold
-    statusText.TextSize = 12
+    statusText.TextSize = 13
     statusText.Parent = status
     
     local active = false
@@ -342,9 +330,9 @@ local function createPremiumToggle(parent, text, yPos, color, icon, callback)
 end
 
 -- ========== CRIAR SLIDER ==========
-local function createPremiumSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal, callback)
+local function createSlider(parent, text, yPos, icon, minVal, maxVal, defaultVal, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0.94, 0, 0, 52)
+    frame.Size = UDim2.new(0.94, 0, 0, 54)
     frame.Position = UDim2.new(0.03, 0, yPos, 0)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     frame.BackgroundTransparency = 0
@@ -374,7 +362,7 @@ local function createPremiumSlider(parent, text, yPos, icon, minVal, maxVal, def
     label.Text = text
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.Font = Enum.Font.GothamBold
-    label.TextSize = 15
+    label.TextSize = 16
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
     
@@ -391,7 +379,7 @@ local function createPremiumSlider(parent, text, yPos, icon, minVal, maxVal, def
     
     local minusBtn = Instance.new("TextButton")
     minusBtn.Size = UDim2.new(0, 32, 0, 32)
-    minusBtn.Position = UDim2.new(0.72, 0, 0.19, 0)
+    minusBtn.Position = UDim2.new(0.72, 0, 0.20, 0)
     minusBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
     minusBtn.BackgroundTransparency = 0.2
     minusBtn.Text = "−"
@@ -408,7 +396,7 @@ local function createPremiumSlider(parent, text, yPos, icon, minVal, maxVal, def
     
     local plusBtn = Instance.new("TextButton")
     plusBtn.Size = UDim2.new(0, 32, 0, 32)
-    plusBtn.Position = UDim2.new(0.85, 0, 0.19, 0)
+    plusBtn.Position = UDim2.new(0.85, 0, 0.20, 0)
     plusBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
     plusBtn.BackgroundTransparency = 0.2
     plusBtn.Text = "+"
@@ -441,18 +429,16 @@ local function createPremiumSlider(parent, text, yPos, icon, minVal, maxVal, def
 end
 
 -- ============================================
--- CONSTRUÇÃO DO PAINEL
+-- CONSTRUÇÃO DO PAINEL - 19 FUNÇÕES
 -- ============================================
 
 local yPos = 0.01
 
--- ============================================
--- CATEGORIA 1: ⚔️ COMBATE (4)
--- ============================================
+-- ===== CATEGORIA 1: ⚔️ COMBATE (4) =====
 createCategory(scrollFrame, "COMBATE (4)", yPos, "⚔️", COLORS.Combat)
 yPos = yPos + 0.065
 
-createPremiumToggle(scrollFrame, "AIMBOT 100%", yPos, COLORS.Combat, "🎯", function(active)
+createToggle(scrollFrame, "AIMBOT 100%", yPos, COLORS.Combat, "🎯", function(active)
     aimbotActive = active
     if active then
         aimbotConnection = RunService.Heartbeat:Connect(function()
@@ -500,28 +486,26 @@ createPremiumToggle(scrollFrame, "AIMBOT 100%", yPos, COLORS.Combat, "🎯", fun
 end)
 yPos = yPos + 0.08
 
-createPremiumToggle(scrollFrame, "SUPER FAR", yPos, COLORS.Combat, "🔭", function(active)
+createToggle(scrollFrame, "SUPER FAR", yPos, COLORS.Combat, "🔭", function(active)
     superFarActive = active
 end)
 yPos = yPos + 0.08
 
-createPremiumToggle(scrollFrame, "SILENT AIM", yPos, COLORS.Combat, "🔇", function(active)
+createToggle(scrollFrame, "SILENT AIM", yPos, COLORS.Combat, "🔇", function(active)
     silentAimActive = active
 end)
 yPos = yPos + 0.08
 
-createPremiumToggle(scrollFrame, "INSTANT KILL", yPos, COLORS.Combat, "💀", function(active)
+createToggle(scrollFrame, "INSTANT KILL", yPos, COLORS.Combat, "💀", function(active)
     instantKillActive = active
 end)
 yPos = yPos + 0.09
 
--- ============================================
--- CATEGORIA 2: 🔫 ARMAS (4)
--- ============================================
+-- ===== CATEGORIA 2: 🔫 ARMAS (4) =====
 createCategory(scrollFrame, "ARMAS (4)", yPos, "🔫", COLORS.Weapon)
 yPos = yPos + 0.065
 
-createPremiumToggle(scrollFrame, "WALLBANG", yPos, COLORS.Weapon, "🧱", function(active)
+createToggle(scrollFrame, "WALLBANG", yPos, COLORS.Weapon, "🧱", function(active)
     wallbangActive = active
     if active then
         for _, obj in pairs(Workspace:GetDescendants()) do
@@ -545,17 +529,17 @@ createPremiumToggle(scrollFrame, "WALLBANG", yPos, COLORS.Weapon, "🧱", functi
 end)
 yPos = yPos + 0.08
 
-createPremiumToggle(scrollFrame, "NO RECOIL", yPos, COLORS.Weapon, "🔫", function(active)
+createToggle(scrollFrame, "NO RECOIL", yPos, COLORS.Weapon, "🔫", function(active)
     noRecoilActive = active
 end)
 yPos = yPos + 0.08
 
-createPremiumToggle(scrollFrame, "NO SPREAD", yPos, COLORS.Weapon, "🎯", function(active)
+createToggle(scrollFrame, "NO SPREAD", yPos, COLORS.Weapon, "🎯", function(active)
     noSpreadActive = active
 end)
 yPos = yPos + 0.08
 
-createPremiumToggle(scrollFrame, "MUNIÇÃO INFINITA", yPos, COLORS.Weapon, "🔫", function(active)
+createToggle(scrollFrame, "MUNIÇÃO INFINITA", yPos, COLORS.Weapon, "🔫", function(active)
     infiniteAmmoActive = active
     if active then
         game:GetService("RunService").Heartbeat:Connect(function()
@@ -567,4 +551,16 @@ createPremiumToggle(scrollFrame, "MUNIÇÃO INFINITA", yPos, COLORS.Weapon, "�
                         if child:IsA("NumberValue") and child.Name:lower():find("ammo") then
                             child.Value = 999
                         end
-                        if child:IsA("IntValue
+                        if child:IsA("IntValue") and child.Name:lower():find("ammo") then
+                            child.Value = 999
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+yPos = yPos + 0.09
+
+-- ===== CATEGORIA 3: 👁️ VISUAIS (3) =====
+createCategory(scrollFrame, "VISUAIS (
