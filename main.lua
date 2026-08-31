@@ -563,4 +563,424 @@ end)
 yPos = yPos + 0.09
 
 -- ===== CATEGORIA 3: 👁️ VISUAIS (3) =====
-createCategory(scrollFrame, "VISUAIS (
+createCategory(scrollFrame, "VISUAIS (3)", yPos, "👁️", COLORS.Visual)
+yPos = yPos + 0.065
+
+createToggle(scrollFrame, "ESP BOX", yPos, COLORS.Visual, "📦", function(active)
+    espActive = active
+    if active then
+        local function addESP(player)
+            if player == LocalPlayer then return end
+            local char = player.Character
+            if not char then return end
+            local highlight = Instance.new("Highlight")
+            highlight.Parent = char
+            highlight.FillColor = Color3.fromRGB(255, 50, 50)
+            highlight.FillTransparency = 0.3
+            highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
+            highlight.OutlineTransparency = 0
+            espHighlights[player] = highlight
+        end
+        local function removeESP(player)
+            if espHighlights[player] then
+                espHighlights[player]:Destroy()
+                espHighlights[player] = nil
+            end
+        end
+        for _, player in pairs(Players:GetPlayers()) do addESP(player) end
+        Players.PlayerAdded:Connect(addESP)
+        Players.PlayerRemoving:Connect(removeESP)
+        for _, player in pairs(Players:GetPlayers()) do
+            player.CharacterAdded:Connect(function()
+                removeESP(player)
+                addESP(player)
+            end)
+        end
+    else
+        for _, highlight in pairs(espHighlights) do
+            highlight:Destroy()
+        end
+        espHighlights = {}
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "INVISIBILIDADE", yPos, COLORS.Visual, "👻", function(active)
+    invisibleActive = active
+    local char = LocalPlayer.Character
+    if char then
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Transparency = active and 1 or 0
+            end
+        end
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "VISÃO NOTURNA", yPos, COLORS.Visual, "🌙", function(active)
+    if active then
+        Lighting.Ambient = Color3.fromRGB(100, 100, 150)
+        Lighting.Brightness = 2
+    else
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+        Lighting.Brightness = 1
+    end
+end)
+yPos = yPos + 0.09
+
+-- ===== CATEGORIA 4: 🏃 MOVIMENTO (4) =====
+createCategory(scrollFrame, "MOVIMENTO (4)", yPos, "🏃", COLORS.Movement)
+yPos = yPos + 0.065
+
+createToggle(scrollFrame, "VELOCIDADE", yPos, COLORS.Movement, "💨", function(active)
+    speedActive = active
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = active and currentSpeed or originalSpeed
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "SUPER JUMP", yPos, COLORS.Movement, "⚡", function(active)
+    jumpActive = active
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.JumpPower = active and 200 or 50
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "FLY", yPos, COLORS.Movement, "🌊", function(active)
+    flyActive = active
+    local char = LocalPlayer.Character
+    if not char then return end
+    local humanoid = char:FindFirstChild("Humanoid")
+    if not humanoid then return end
+    if active then
+        humanoid.PlatformStand = true
+        flyConnection = RunService.Heartbeat:Connect(function()
+            if not flyActive then return end
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            local moveDirection = Vector3.new()
+            local camera = Workspace.CurrentCamera
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + camera.CFrame.LookVector * Vector3.new(1, 0, 1)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - camera.CFrame.LookVector * Vector3.new(1, 0, 1)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - camera.CFrame.RightVector * Vector3.new(1, 0, 1)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + camera.CFrame.RightVector * Vector3.new(1, 0, 1)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDirection = moveDirection + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                moveDirection = moveDirection - Vector3.new(0, 1, 0)
+            end
+            if moveDirection.Magnitude > 0 then
+                moveDirection = moveDirection.Unit * flySpeed
+                hrp.Velocity = moveDirection
+            else
+                hrp.Velocity = Vector3.new(0, 0, 0)
+            end
+        end)
+    else
+        humanoid.PlatformStand = false
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Velocity = Vector3.new(0, 0, 0)
+        end
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "NO CLIP", yPos, COLORS.Movement, "🧱", function(active)
+    noClipActive = active
+    if active then
+        noClipConnection = RunService.Heartbeat:Connect(function()
+            if not noClipActive then return end
+            local char = LocalPlayer.Character
+            if char then
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        if noClipConnection then
+            noClipConnection:Disconnect()
+            noClipConnection = nil
+        end
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end)
+yPos = yPos + 0.09
+
+-- ===== CATEGORIA 5: 💥 PODERES (4) =====
+createCategory(scrollFrame, "PODERES (4)", yPos, "💥", COLORS.Power)
+yPos = yPos + 0.065
+
+createToggle(scrollFrame, "GOD MODE", yPos, COLORS.Power, "🛡️", function(active)
+    godModeActive = active
+    local char = LocalPlayer.Character
+    if char then
+        local humanoid = char:FindFirstChild("Humanoid")
+        if humanoid then
+            if active then
+                humanoid.MaxHealth = math.huge
+                humanoid.Health = math.huge
+                humanoid.BreakJointsOnDeath = false
+            else
+                humanoid.MaxHealth = 100
+                humanoid.Health = 100
+                humanoid.BreakJointsOnDeath = true
+            end
+        end
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "ANTI-KICK", yPos, COLORS.Power, "🛡️", function(active)
+    antiKickActive = active
+    if active then
+        LocalPlayer:GetPropertyChangedSignal("Parent"):Connect(function()
+            if antiKickActive and LocalPlayer.Parent == nil then
+                wait(0.1)
+                LocalPlayer.Parent = Players
+            end
+        end)
+        antiKickConnection = RunService.Heartbeat:Connect(function()
+            if antiKickActive then
+                for _, gui in pairs(CoreGui:GetChildren()) do
+                    if gui:IsA("ScreenGui") and (gui.Name:lower():find("kick") or gui.Name:lower():find("ban")) then
+                        gui:Destroy()
+                    end
+                end
+            end
+        end)
+    else
+        if antiKickConnection then
+            antiKickConnection:Disconnect()
+            antiKickConnection = nil
+        end
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "FREEZE PLAYERS", yPos, COLORS.Power, "🌀", function(active)
+    freezeActive = active
+    if active then
+        RunService.Heartbeat:Connect(function()
+            if not freezeActive then return end
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    local char = player.Character
+                    if char and char:FindFirstChild("HumanoidRootPart") then
+                        char.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                    end
+                end
+            end
+        end)
+    end
+end)
+yPos = yPos + 0.08
+
+createToggle(scrollFrame, "EXPLODE PLAYERS", yPos, COLORS.Power, "💣", function(active)
+    if active then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                local char = player.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local explosion = Instance.new("Explosion")
+                    explosion.Position = char.HumanoidRootPart.Position
+                    explosion.BlastRadius = 15
+                    explosion.BlastPressure = 2000
+                    explosion.Parent = Workspace
+                    local humanoid = char:FindFirstChild("Humanoid")
+                    if humanoid then
+                        humanoid.Health = 0
+                    end
+                end
+            end
+        end
+    end
+end)
+yPos = yPos + 0.09
+
+-- ===== SLIDERS =====
+createSlider(scrollFrame, "VELOCIDADE", yPos, "⚡", 50, 500, 70, function(val)
+    currentSpeed = val
+    if speedActive then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = val
+        end
+    end
+end)
+yPos = yPos + 0.08
+
+createSlider(scrollFrame, "FLY SPEED", yPos, "🚀", 30, 300, 60, function(val)
+    flySpeed = val
+end)
+yPos = yPos + 0.08
+
+createSlider(scrollFrame, "AIMBOT RANGE", yPos, "📏", 50, 500, 200, function(val)
+    CONFIG.AimbotRange = val
+end)
+yPos = yPos + 0.08
+
+-- ============================================
+-- STATUS BAR
+-- ============================================
+local statusBar = Instance.new("Frame")
+statusBar.Size = UDim2.new(0.35, 0, 0, 32)
+statusBar.Position = UDim2.new(0.325, 0, 0.01, 0)
+statusBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+statusBar.BackgroundTransparency = 0
+statusBar.BorderSizePixel = 2
+statusBar.BorderColor3 = Color3.fromRGB(255, 255, 255)
+statusBar.Parent = screenGui
+statusBar.ZIndex = 998
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 10)
+statusCorner.Parent = statusBar
+
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(1, 0, 1, 0)
+statusText.BackgroundTransparency = 1
+statusText.Text = "◆ SYSTEM READY"
+statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusText.Font = Enum.Font.GothamBold
+statusText.TextSize = 15
+statusText.Parent = statusBar
+
+-- ============================================
+-- TOGGLE MENU
+-- ============================================
+local menuOpen = false
+
+function toggleMenu()
+    menuOpen = not menuOpen
+    mainFrame.Visible = menuOpen
+    floatBtn.Visible = not menuOpen
+    
+    if menuOpen then
+        mainFrame.Size = UDim2.new(0, 420, 0, 0)
+        TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+            Size = UDim2.new(0, 420, 0, 620)
+        }):Play()
+    end
+end
+
+floatBtn.MouseButton1Click:Connect(toggleMenu)
+
+-- ============================================
+-- KEYBINDS
+-- ============================================
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.Escape and menuOpen then
+        toggleMenu()
+    end
+    if input.KeyCode == Enum.KeyCode.F5 then
+        toggleMenu()
+    end
+end)
+
+-- ============================================
+-- ARRASTAR MENU
+-- ============================================
+local dragging = false
+local dragStart, startPos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
+
+mainFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or 
+                     input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, 
+                                      startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- ============================================
+-- UPDATE STATUS
+-- ============================================
+local function updateStatus()
+    local active = {}
+    if aimbotActive then table.insert(active, "🎯") end
+    if espActive then table.insert(active, "📦") end
+    if flyActive then table.insert(active, "🌊") end
+    if godModeActive then table.insert(active, "🛡️") end
+    if speedActive then table.insert(active, "💨") end
+    if wallbangActive then table.insert(active, "🧱") end
+    if infiniteAmmoActive then table.insert(active, "🔫") end
+    
+    if #active > 0 then
+        statusText.Text = "◆ " .. table.concat(active, " ")
+        statusText.TextColor3 = Color3.fromRGB(0, 255, 100)
+    else
+        statusText.Text = "◆ SYSTEM READY"
+        statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if math.random(1, 30) == 1 then
+        updateStatus()
+    end
+end)
+
+-- ============================================
+-- PRINT FINAL
+-- ============================================
+print("========================================")
+print("💎 PAINEL FINALIZADO - 100% VISÍVEL!")
+print("========================================")
+print("⚔️ COMBATE (4): Aimbot, Far, Silent, Kill")
+print("🔫 ARMAS (4): Wallbang, Recoil, Spread, Ammo")
+print("👁️ VISUAIS (3): ESP, Invisível, Visão Noturna")
+print("🏃 MOVIMENTO (4): Speed, Jump, Fly, No Clip")
+print("💥 PODERES (4): God, Anti-Kick, Freeze, Explode")
+print("========================================")
+print("⚡ Clique em ⚡ para abrir")
+print("⌨️ F5 ou ESC para fechar")
+print("========================================")
+print("✅ FUNDO PRETO | TEXTO BRANCO | BORDAS BRANCAS")
+print("✅ 100% LEGÍVEL E VISÍVEL!")
+print("========================================")
