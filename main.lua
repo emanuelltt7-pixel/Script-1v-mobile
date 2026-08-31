@@ -1,6 +1,6 @@
 -- ============================================================
--- 🔥 SCRIPT ULTRA COMPACTO - VERSÃO EXTREMA 🔥
--- PAINEL PEQUENO | FUNÇÕES MAIS FORTES | SEM ERROS
+-- 🔥 SCRIPT ULTRA AJUSTÁVEL - AIMBOT | SPEED | FLY 🔥
+-- CONTROLES PRECISOS | MOBILE + PC | SEM ERROS
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -13,14 +13,18 @@ local TweenService = game:GetService("TweenService")
 local VirtualUser = game:GetService("VirtualUser")
 local LocalPlayer = Players.LocalPlayer
 
--- ========== CONFIGURAÇÕES EXTREMAS ==========
+-- ========== DETECTAR MOBILE ==========
+local isMobile = UserInputService.TouchEnabled
+print(isMobile and "📱 MODO MOBILE ATIVADO!" or "💻 MODO PC ATIVADO!")
+
+-- ========== CONFIGURAÇÕES AJUSTÁVEIS ==========
 local CONFIG = {
-    AimbotRange = 500,        -- Alcance extremo
-    FlySpeed = 200,           -- Voo super rápido
-    WalkSpeed = 500,          -- Velocidade máxima
-    JumpPower = 500,          -- Pulo estratosférico
-    ESPColor = Color3.fromRGB(255, 0, 0),
-    AutoFarmDelay = 0.1,
+    AimbotRange = 200,          -- Ajustável (50-2000)
+    AimbotSmoothness = 0.15,    -- Ajustável (0.01-1.0)
+    FlySpeed = 100,             -- Ajustável (10-500)
+    WalkSpeed = 100,            -- Ajustável (50-5000)
+    JumpPower = 800,            -- Fixo
+    AutoFarmDelay = 0.05,
 }
 
 -- ========== VARIÁVEIS ==========
@@ -40,21 +44,22 @@ local toggles = {
     farm = false,
     ammo = false,
     nv = false,
+    aimbotlock = false,
 }
 
 local connections = {}
-local currentSpeed = 500
 local originalSpeed = 16
+local aimbotThread = nil
 
--- ========== GUI COMPACTA ==========
+-- ========== GUI PRINCIPAL ==========
 local sg = Instance.new("ScreenGui")
-sg.Name = "Hack"
+sg.Name = "HackAjustavel"
 sg.Parent = CoreGui
 sg.ResetOnSpawn = false
 
--- Botão flutuante (pequeno)
+-- Botão flutuante
 local fb = Instance.new("TextButton")
-fb.Size = UDim2.new(0, 50, 0, 50)
+fb.Size = UDim2.new(0, 55, 0, 55)
 fb.Position = UDim2.new(0.85, 0, 0.02, 0)
 fb.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 fb.BackgroundTransparency = 0.1
@@ -65,12 +70,13 @@ fb.TextSize = 24
 fb.BorderSizePixel = 0
 fb.Parent = sg
 fb.ZIndex = 999
+Instance.new("UICorner").CornerRadius = UDim.new(1, 0)
 Instance.new("UICorner").Parent = fb
 
--- Painel principal (MENOR)
+-- Painel principal
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 250, 0, 380)
-main.Position = UDim2.new(0.5, -125, 0.5, -190)
+main.Size = UDim2.new(0, 300, 0, 480)
+main.Position = UDim2.new(0.5, -150, 0.5, -240)
 main.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
 main.BackgroundTransparency = 0.05
 main.BorderSizePixel = 2
@@ -79,93 +85,251 @@ main.Parent = sg
 main.Visible = true
 main.ZIndex = 100
 main.ClipsDescendants = true
+Instance.new("UICorner").CornerRadius = UDim.new(0, 16)
 Instance.new("UICorner").Parent = main
 
--- Título (pequeno)
+-- Título
 local titulo = Instance.new("Frame")
-titulo.Size = UDim2.new(1, 0, 0, 40)
+titulo.Size = UDim2.new(1, 0, 0, 45)
 titulo.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
 titulo.BorderSizePixel = 0
 titulo.Parent = main
+Instance.new("UICorner").CornerRadius = UDim.new(0, 16)
 Instance.new("UICorner").Parent = titulo
 
 local lbl = Instance.new("TextLabel")
 lbl.Size = UDim2.new(0.7, 0, 1, 0)
 lbl.Position = UDim2.new(0.05, 0, 0, 0)
 lbl.BackgroundTransparency = 1
-lbl.Text = "🔥 ULTRA"
+lbl.Text = "🎯 AJUSTÁVEL"
 lbl.TextColor3 = Color3.fromRGB(255, 50, 50)
 lbl.Font = Enum.Font.GothamBold
 lbl.TextSize = 18
 lbl.TextXAlignment = Enum.TextXAlignment.Left
 lbl.Parent = titulo
 
+local sub = Instance.new("TextLabel")
+sub.Size = UDim2.new(0.7, 0, 0, 14)
+sub.Position = UDim2.new(0.05, 0, 0.65, 0)
+sub.BackgroundTransparency = 1
+sub.Text = "⚡ CONTROLE PRECISO"
+sub.TextColor3 = Color3.fromRGB(150, 200, 255)
+sub.Font = Enum.Font.Gotham
+sub.TextSize = 10
+sub.TextXAlignment = Enum.TextXAlignment.Left
+sub.Parent = titulo
+
 local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 30, 0, 30)
-close.Position = UDim2.new(1, -38, 0, 5)
+close.Size = UDim2.new(0, 35, 0, 35)
+close.Position = UDim2.new(1, -42, 0, 5)
 close.BackgroundColor3 = Color3.fromRGB(200, 40, 40)
 close.BorderSizePixel = 0
 close.Text = "✕"
 close.TextColor3 = Color3.fromRGB(255, 255, 255)
 close.Font = Enum.Font.GothamBold
-close.TextSize = 16
+close.TextSize = 18
 close.Parent = titulo
+Instance.new("UICorner").CornerRadius = UDim.new(1, 0)
 Instance.new("UICorner").Parent = close
 
 close.MouseButton1Click:Connect(function()
     main.Visible = false
     fb.Visible = true
 end)
+close.TouchTap:Connect(function()
+    main.Visible = false
+    fb.Visible = true
+end)
 
--- Scroll (menor)
+-- Scroll
 local sc = Instance.new("ScrollingFrame")
-sc.Size = UDim2.new(1, 0, 1, -40)
-sc.Position = UDim2.new(0, 0, 0, 40)
+sc.Size = UDim2.new(1, 0, 1, -45)
+sc.Position = UDim2.new(0, 0, 0, 45)
 sc.BackgroundTransparency = 1
 sc.BorderSizePixel = 0
 sc.Parent = main
-sc.CanvasSize = UDim2.new(0, 0, 0, 750)
-sc.ScrollBarThickness = 2
+sc.CanvasSize = UDim2.new(0, 0, 0, 950)
+sc.ScrollBarThickness = isMobile and 4 or 3
 sc.ScrollBarImageColor3 = Color3.fromRGB(255, 50, 50)
 
--- ========== FUNÇÃO CRIAR BOTÃO (MENOR) ==========
+-- ========== FUNÇÃO CRIAR BOTÃO ==========
 local function btn(parent, text, y, color, icon)
     local b = Instance.new("TextButton")
     local s = Instance.new("UIStroke")
-    b.Size = UDim2.new(0.9, 0, 0, 32)
-    b.Position = UDim2.new(0.05, 0, y, 0)
+    local h = isMobile and 38 or 34
+    b.Size = UDim2.new(0.92, 0, 0, h)
+    b.Position = UDim2.new(0.04, 0, y, 0)
     b.Text = icon .. " " .. text .. " [OFF]"
     b.TextColor3 = Color3.fromRGB(255, 255, 255)
-    b.TextSize = 13
+    b.TextSize = isMobile and 14 or 13
     b.Font = Enum.Font.GothamBold
     b.BackgroundColor3 = Color3.fromRGB(30, 35, 65)
     b.BorderSizePixel = 0
     b.Parent = parent
     b.ZIndex = 101
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
     Instance.new("UICorner").Parent = b
-    s.Thickness = 1.5
+    s.Thickness = isMobile and 2 or 1.5
     s.Color = color
     s.Parent = b
     return b, s
 end
 
--- ========== CATEGORIAS (PEQUENAS) ==========
+-- ========== FUNÇÃO CRIAR SLIDER ==========
+local function criarSlider(parent, titulo, min, max, padrao, yPos, cor, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.92, 0, 0, 55)
+    frame.Position = UDim2.new(0.04, 0, yPos, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(25, 30, 55)
+    frame.BorderSizePixel = 1
+    frame.BorderColor3 = cor
+    frame.Parent = parent
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner").Parent = frame
+
+    -- Label
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.6, 0, 0.4, 0)
+    label.Position = UDim2.new(0.05, 0, 0.05, 0)
+    label.BackgroundTransparency = 1
+    label.Text = titulo .. ": " .. padrao
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = isMobile and 14 or 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    -- Valor mostrado
+    local valorLabel = Instance.new("TextLabel")
+    valorLabel.Size = UDim2.new(0.3, 0, 0.4, 0)
+    valorLabel.Position = UDim2.new(0.65, 0, 0.05, 0)
+    valorLabel.BackgroundTransparency = 1
+    valorLabel.Text = tostring(padrao)
+    valorLabel.TextColor3 = cor
+    valorLabel.Font = Enum.Font.GothamBold
+    valorLabel.TextSize = isMobile and 16 or 14
+    valorLabel.TextXAlignment = Enum.TextXAlignment.Right
+    valorLabel.Parent = frame
+
+    -- Botão MENOS
+    local menos = Instance.new("TextButton")
+    menos.Size = UDim2.new(0.15, 0, 0.4, 0)
+    menos.Position = UDim2.new(0.05, 0, 0.55, 0)
+    menos.BackgroundColor3 = Color3.fromRGB(60, 40, 40)
+    menos.Text = "−"
+    menos.TextColor3 = Color3.fromRGB(255, 255, 255)
+    menos.Font = Enum.Font.GothamBold
+    menos.TextSize = isMobile and 22 or 18
+    menos.BorderSizePixel = 0
+    menos.Parent = frame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner").Parent = menos
+
+    -- Botão MAIS
+    local mais = Instance.new("TextButton")
+    mais.Size = UDim2.new(0.15, 0, 0.4, 0)
+    mais.Position = UDim2.new(0.8, 0, 0.55, 0)
+    mais.BackgroundColor3 = Color3.fromRGB(40, 60, 40)
+    mais.Text = "+"
+    mais.TextColor3 = Color3.fromRGB(255, 255, 255)
+    mais.Font = Enum.Font.GothamBold
+    mais.TextSize = isMobile and 22 or 18
+    mais.BorderSizePixel = 0
+    mais.Parent = frame
+    Instance.new("UICorner").CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner").Parent = mais
+
+    -- Barra de progresso
+    local barraBg = Instance.new("Frame")
+    barraBg.Size = UDim2.new(0.55, 0, 0.08, 0)
+    barraBg.Position = UDim2.new(0.225, 0, 0.85, 0)
+    barraBg.BackgroundColor3 = Color3.fromRGB(50, 50, 80)
+    barraBg.BorderSizePixel = 0
+    barraBg.Parent = frame
+    Instance.new("UICorner").CornerRadius = UDim.new(1, 0)
+    Instance.new("UICorner").Parent = barraBg
+
+    local barra = Instance.new("Frame")
+    barra.Size = UDim2.new((padrao - min) / (max - min), 0, 1, 0)
+    barra.BackgroundColor3 = cor
+    barra.BorderSizePixel = 0
+    barra.Parent = barraBg
+    Instance.new("UICorner").CornerRadius = UDim.new(1, 0)
+    Instance.new("UICorner").Parent = barra
+
+    local valor = padrao
+
+    local function atualizar()
+        label.Text = titulo .. ": " .. valor
+        valorLabel.Text = tostring(valor)
+        barra.Size = UDim2.new((valor - min) / (max - min), 0, 1, 0)
+        callback(valor)
+    end
+
+    menos.MouseButton1Click:Connect(function()
+        valor = math.max(min, valor - 1)
+        atualizar()
+    end)
+    menos.TouchTap:Connect(function()
+        valor = math.max(min, valor - 1)
+        atualizar()
+    end)
+
+    mais.MouseButton1Click:Connect(function()
+        valor = math.min(max, valor + 1)
+        atualizar()
+    end)
+    mais.TouchTap:Connect(function()
+        valor = math.min(max, valor + 1)
+        atualizar()
+    end)
+
+    -- Toque segurar para acelerar
+    local function segurar(btn, direcao)
+        local con
+        con = btn.MouseButton1Down:Connect(function()
+            while true do
+                valor = math.clamp(valor + direcao, min, max)
+                atualizar()
+                wait(0.05)
+            end
+        end)
+        btn.MouseButton1Up:Connect(function()
+            con:Disconnect()
+        end)
+        btn.TouchBegan:Connect(function()
+            while true do
+                valor = math.clamp(valor + direcao, min, max)
+                atualizar()
+                wait(0.05)
+            end
+        end)
+        btn.TouchEnded:Connect(function()
+            con:Disconnect()
+        end)
+    end
+
+    return frame, valor
+end
+
+-- ========== CATEGORIAS ==========
 local function cat(parent, text, y, cor)
     local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0.9, 0, 0, 20)
-    l.Position = UDim2.new(0.05, 0, y, 0)
+    l.Size = UDim2.new(0.92, 0, 0, 22)
+    l.Position = UDim2.new(0.04, 0, y, 0)
     l.BackgroundTransparency = 1
     l.Text = text
     l.TextColor3 = cor
     l.Font = Enum.Font.GothamBold
-    l.TextSize = 13
+    l.TextSize = isMobile and 14 or 13
     l.TextXAlignment = Enum.TextXAlignment.Left
     l.Parent = parent
 end
 
+-- ========== BOTÕES ==========
 cat(sc, "⚔️ COMBATE", 0.01, Color3.fromRGB(255, 80, 80))
 local a1, s1 = btn(sc, "AIMBOT", 0.08, Color3.fromRGB(255, 80, 80), "🎯")
-local a2, s2 = btn(sc, "FAR", 0.16, Color3.fromRGB(100, 200, 255), "🔭")
+local a2, s2 = btn(sc, "LOCK", 0.16, Color3.fromRGB(255, 200, 50), "🔒")
 local a3, s3 = btn(sc, "KILL", 0.24, Color3.fromRGB(255, 50, 50), "💀")
 local a4, s4 = btn(sc, "AMMO", 0.32, Color3.fromRGB(255, 200, 50), "🔫")
 
@@ -187,60 +351,94 @@ local a14, s14 = btn(sc, "FREEZE", 1.33, Color3.fromRGB(100, 200, 255), "🌀")
 local a15, s15 = btn(sc, "EXPLODE", 1.41, Color3.fromRGB(255, 100, 50), "💣")
 local a16, s16 = btn(sc, "FARM", 1.49, Color3.fromRGB(100, 255, 150), "🤖")
 
--- ========== SLIDER VELOCIDADE (MENOR) ==========
-local sf = Instance.new("Frame")
-sf.Size = UDim2.new(0.9, 0, 0, 35)
-sf.Position = UDim2.new(0.05, 0, 1.58, 0)
-sf.BackgroundColor3 = Color3.fromRGB(35, 40, 70)
-sf.BorderSizePixel = 1
-sf.BorderColor3 = Color3.fromRGB(255, 50, 50)
-sf.Parent = sc
-Instance.new("UICorner").Parent = sf
+-- ========== SLIDERS AJUSTÁVEIS ==========
 
-local sl = Instance.new("TextLabel")
-sl.Size = UDim2.new(0.5, 0, 1, 0)
-sl.BackgroundTransparency = 1
-sl.Text = "⚡ SPEED: 500"
-sl.TextColor3 = Color3.fromRGB(255, 255, 255)
-sl.Font = Enum.Font.GothamBold
-sl.TextSize = 12
-sl.TextXAlignment = Enum.TextXAlignment.Left
-sl.Parent = sf
+-- 1. AIMBOT RANGE (50-2000)
+local rangeFrame, aimbotRange = criarSlider(sc, "🎯 ALCANCE", 50, 2000, 200, 1.57, Color3.fromRGB(255, 80, 80), function(v)
+    CONFIG.AimbotRange = v
+    print("🎯 ALCANCE AJUSTADO: " .. v)
+end)
 
-local ss = Instance.new("TextButton")
-ss.Size = UDim2.new(0.3, 0, 0.8, 0)
-ss.Position = UDim2.new(0.65, 0, 0.1, 0)
-ss.BackgroundColor3 = Color3.fromRGB(80, 80, 150)
-ss.Text = "500"
-ss.TextColor3 = Color3.fromRGB(255, 255, 255)
-ss.Font = Enum.Font.GothamBold
-ss.TextSize = 14
-ss.BorderSizePixel = 1
-ss.BorderColor3 = Color3.fromRGB(255, 50, 50)
-ss.Parent = sf
-Instance.new("UICorner").Parent = ss
+-- 2. AIMBOT SUAVIDADE (1-100 -> 0.01-1.0)
+local smoothFrame, aimbotSmooth = criarSlider(sc, "🔄 SUAVIDADE", 1, 100, 15, 1.65, Color3.fromRGB(255, 200, 50), function(v)
+    CONFIG.AimbotSmoothness = v / 100
+    print("🔄 SUAVIDADE AJUSTADA: " .. CONFIG.AimbotSmoothness)
+end)
 
-local speeds = {100, 200, 300, 500, 800, 1000, 2000, 5000}
-ss.MouseButton1Click:Connect(function()
-    local idx = 0
-    for i, v in pairs(speeds) do
-        if v == currentSpeed then idx = i break end
-    end
-    idx = idx % #speeds + 1
-    currentSpeed = speeds[idx]
-    ss.Text = tostring(currentSpeed)
-    sl.Text = "⚡ SPEED: " .. currentSpeed
+-- 3. SPEED (50-5000)
+local speedFrame, speedValue = criarSlider(sc, "💨 VELOCIDADE", 50, 5000, 200, 1.73, Color3.fromRGB(100, 255, 100), function(v)
+    CONFIG.WalkSpeed = v
     if toggles.speed then
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = currentSpeed
+            char.Humanoid.WalkSpeed = v
         end
     end
+    print("💨 VELOCIDADE AJUSTADA: " .. v)
 end)
 
--- ========== FUNÇÕES EXTREMAS ==========
+-- 4. FLY (10-500)
+local flyFrame, flyValue = criarSlider(sc, "🌊 VEL. VOO", 10, 500, 100, 1.81, Color3.fromRGB(100, 255, 200), function(v)
+    CONFIG.FlySpeed = v
+    print("🌊 VEL. VOO AJUSTADA: " .. v)
+end)
 
--- 1. AIMBOT
+-- ========== FUNÇÃO AIMBOT (USANDO CONFIG) ==========
+local function aimbotLoop()
+    while toggles.aimbot do
+        local char = LocalPlayer.Character
+        if not char then wait(0.1) return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then wait(0.1) return end
+        
+        local closest = nil
+        local closestDist = toggles.far and math.huge or CONFIG.AimbotRange
+        
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then
+                local tc = p.Character
+                if tc and tc:FindFirstChild("Humanoid") then
+                    local h = tc.Humanoid
+                    if h.Health and h.Health > 0 then
+                        local th = tc:FindFirstChild("HumanoidRootPart")
+                        if th then
+                            local d = (th.Position - hrp.Position).Magnitude
+                            if d < closestDist then
+                                closestDist = d
+                                closest = tc
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if closest then
+            local head = closest:FindFirstChild("Head")
+            if head then
+                local targetCF = CFrame.new(hrp.Position, head.Position)
+                if toggles.aimbotlock then
+                    hrp.CFrame = targetCF
+                else
+                    hrp.CFrame = hrp.CFrame:Lerp(targetCF, CONFIG.AimbotSmoothness)
+                end
+                
+                if toggles.kill then
+                    local h = closest:FindFirstChild("Humanoid")
+                    if h and h.Health and h.Health > 0 then
+                        h.Health = 0
+                    end
+                end
+            end
+        end
+        
+        wait(0.01)
+    end
+end
+
+-- ========== FUNÇÕES DOS BOTÕES ==========
+
+-- AIMBOT
 a1.MouseButton1Click:Connect(function()
     toggles.aimbot = not toggles.aimbot
     a1.Text = toggles.aimbot and "🎯 AIMBOT [ON]" or "🎯 AIMBOT [OFF]"
@@ -249,54 +447,21 @@ a1.MouseButton1Click:Connect(function()
     
     if toggles.aimbot then
         if connections.aimbot then connections.aimbot:Disconnect() end
-        connections.aimbot = RunService.Heartbeat:Connect(function()
-            if not toggles.aimbot then return end
-            local char = LocalPlayer.Character
-            if not char then return end
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            local closest, dist = nil, toggles.far and math.huge or CONFIG.AimbotRange
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= LocalPlayer then
-                    local tc = p.Character
-                    if tc and tc:FindFirstChild("Humanoid") and tc.Humanoid.Health > 0 then
-                        local th = tc:FindFirstChild("HumanoidRootPart")
-                        if th then
-                            local d = (th.Position - hrp.Position).Magnitude
-                            if d < dist then
-                                dist, closest = d, tc
-                            end
-                        end
-                    end
-                end
-            end
-            
-            if closest then
-                local head = closest:FindFirstChild("Head")
-                if head then
-                    hrp.CFrame = CFrame.new(hrp.Position, head.Position)
-                    if toggles.kill then
-                        local h = closest:FindFirstChild("Humanoid")
-                        if h and h.Health > 0 then h.Health = 0 end
-                    end
-                end
-            end
-        end)
+        connections.aimbot = RunService.Heartbeat:Connect(aimbotLoop)
     else
         if connections.aimbot then connections.aimbot:Disconnect() end
     end
 end)
 
--- 2. FAR
+-- LOCK
 a2.MouseButton1Click:Connect(function()
-    toggles.far = not toggles.far
-    a2.Text = toggles.far and "🔭 FAR [ON]" or "🔭 FAR [OFF]"
-    a2.BackgroundColor3 = toggles.far and Color3.fromRGB(20, 80, 40) or Color3.fromRGB(30, 35, 65)
-    s2.Color = toggles.far and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(100, 200, 255)
+    toggles.aimbotlock = not toggles.aimbotlock
+    a2.Text = toggles.aimbotlock and "🔒 LOCK [ON]" or "🔒 LOCK [OFF]"
+    a2.BackgroundColor3 = toggles.aimbotlock and Color3.fromRGB(20, 80, 40) or Color3.fromRGB(30, 35, 65)
+    s2.Color = toggles.aimbotlock and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 200, 50)
 end)
 
--- 3. KILL
+-- KILL
 a3.MouseButton1Click:Connect(function()
     toggles.kill = not toggles.kill
     a3.Text = toggles.kill and "💀 KILL [ON]" or "💀 KILL [OFF]"
@@ -304,7 +469,7 @@ a3.MouseButton1Click:Connect(function()
     s3.Color = toggles.kill and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
 end)
 
--- 4. AMMO
+-- AMMO
 a4.MouseButton1Click:Connect(function()
     toggles.ammo = not toggles.ammo
     a4.Text = toggles.ammo and "🔫 AMMO [ON]" or "🔫 AMMO [OFF]"
@@ -318,7 +483,8 @@ a4.MouseButton1Click:Connect(function()
             for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
                 if tool:IsA("Tool") then
                     for _, c in pairs(tool:GetDescendants()) do
-                        if c.Name:lower():find("ammo") or c.Name:lower():find("bullet") then
+                        local n = c.Name:lower()
+                        if n:find("ammo") or n:find("bullet") or n:find("magazine") then
                             if c:IsA("NumberValue") or c:IsA("IntValue") then c.Value = 999 end
                         end
                     end
@@ -327,7 +493,8 @@ a4.MouseButton1Click:Connect(function()
             local char = LocalPlayer.Character
             if char then
                 for _, c in pairs(char:GetDescendants()) do
-                    if c.Name:lower():find("ammo") or c.Name:lower():find("bullet") then
+                    local n = c.Name:lower()
+                    if n:find("ammo") or n:find("bullet") or n:find("magazine") then
                         if c:IsA("NumberValue") or c:IsA("IntValue") then c.Value = 999 end
                     end
                 end
@@ -338,7 +505,7 @@ a4.MouseButton1Click:Connect(function()
     end
 end)
 
--- 5. ESP
+-- ESP
 a5.MouseButton1Click:Connect(function()
     toggles.esp = not toggles.esp
     a5.Text = toggles.esp and "📦 ESP [ON]" or "📦 ESP [OFF]"
@@ -374,7 +541,7 @@ a5.MouseButton1Click:Connect(function()
     end
 end)
 
--- 6. INVIS
+-- INVIS
 a6.MouseButton1Click:Connect(function()
     toggles.invisible = not toggles.invisible
     a6.Text = toggles.invisible and "👻 INVIS [ON]" or "👻 INVIS [OFF]"
@@ -389,7 +556,7 @@ a6.MouseButton1Click:Connect(function()
     end
 end)
 
--- 7. NIGHT
+-- NIGHT
 a7.MouseButton1Click:Connect(function()
     toggles.nv = not toggles.nv
     a7.Text = toggles.nv and "🌙 NIGHT [ON]" or "🌙 NIGHT [OFF]"
@@ -397,10 +564,10 @@ a7.MouseButton1Click:Connect(function()
     s7.Color = toggles.nv and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(100, 150, 255)
     
     if toggles.nv then
-        Lighting.Ambient = Color3.fromRGB(150, 150, 200)
-        Lighting.Brightness = 3
-        Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 255)
-        Lighting.FogEnd = 2000
+        Lighting.Ambient = Color3.fromRGB(200, 200, 255)
+        Lighting.Brightness = 5
+        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        Lighting.FogEnd = 5000
     else
         Lighting.Ambient = Color3.fromRGB(0, 0, 0)
         Lighting.Brightness = 1
@@ -409,7 +576,7 @@ a7.MouseButton1Click:Connect(function()
     end
 end)
 
--- 8. SPEED
+-- SPEED
 a8.MouseButton1Click:Connect(function()
     toggles.speed = not toggles.speed
     a8.Text = toggles.speed and "💨 SPEED [ON]" or "💨 SPEED [OFF]"
@@ -418,11 +585,11 @@ a8.MouseButton1Click:Connect(function()
     
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid.WalkSpeed = toggles.speed and currentSpeed or originalSpeed
+        char.Humanoid.WalkSpeed = toggles.speed and CONFIG.WalkSpeed or originalSpeed
     end
 end)
 
--- 9. JUMP
+-- JUMP
 a9.MouseButton1Click:Connect(function()
     toggles.jump = not toggles.jump
     a9.Text = toggles.jump and "⚡ JUMP [ON]" or "⚡ JUMP [OFF]"
@@ -431,11 +598,11 @@ a9.MouseButton1Click:Connect(function()
     
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid.JumpPower = toggles.jump and CONFIG.JumpPower or 50
+        char.Humanoid.JumpPower = toggles.jump and 800 or 50
     end
 end)
 
--- 10. FLY
+-- FLY
 a10.MouseButton1Click:Connect(function()
     toggles.fly = not toggles.fly
     a10.Text = toggles.fly and "🌊 FLY [ON]" or "🌊 FLY [OFF]"
@@ -462,6 +629,7 @@ a10.MouseButton1Click:Connect(function()
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector * Vector3.new(1,0,1) end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir = dir + Vector3.new(0,1,0) end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then dir = dir - Vector3.new(0,1,0) end
+            
             if dir.Magnitude > 0 then
                 hrp.Velocity = dir.Unit * CONFIG.FlySpeed
             else
@@ -476,7 +644,7 @@ a10.MouseButton1Click:Connect(function()
     end
 end)
 
--- 11. NOCLIP
+-- NOCLIP
 a11.MouseButton1Click:Connect(function()
     toggles.noclip = not toggles.noclip
     a11.Text = toggles.noclip and "🧱 NOCLIP [ON]" or "🧱 NOCLIP [OFF]"
@@ -505,7 +673,7 @@ a11.MouseButton1Click:Connect(function()
     end
 end)
 
--- 12. GOD
+-- GOD
 a12.MouseButton1Click:Connect(function()
     toggles.god = not toggles.god
     a12.Text = toggles.god and "🛡️ GOD [ON]" or "🛡️ GOD [OFF]"
@@ -529,7 +697,7 @@ a12.MouseButton1Click:Connect(function()
     end
 end)
 
--- 13. ANTIKICK
+-- ANTIKICK
 a13.MouseButton1Click:Connect(function()
     toggles.antikick = not toggles.antikick
     a13.Text = toggles.antikick and "🛡️ ANTIKICK [ON]" or "🛡️ ANTIKICK [OFF]"
@@ -561,7 +729,7 @@ a13.MouseButton1Click:Connect(function()
     end
 end)
 
--- 14. FREEZE
+-- FREEZE
 a14.MouseButton1Click:Connect(function()
     toggles.freeze = not toggles.freeze
     a14.Text = toggles.freeze and "🌀 FREEZE [ON]" or "🌀 FREEZE [OFF]"
@@ -586,7 +754,7 @@ a14.MouseButton1Click:Connect(function()
     end
 end)
 
--- 15. EXPLODE
+-- EXPLODE
 a15.MouseButton1Click:Connect(function()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer then
@@ -594,8 +762,8 @@ a15.MouseButton1Click:Connect(function()
             if c and c:FindFirstChild("HumanoidRootPart") then
                 local e = Instance.new("Explosion")
                 e.Position = c.HumanoidRootPart.Position
-                e.BlastRadius = 30
-                e.BlastPressure = 5000
+                e.BlastRadius = 50
+                e.BlastPressure = 10000
                 e.Parent = Workspace
                 local h = c:FindFirstChild("Humanoid")
                 if h and h.Health > 0 then h.Health = 0 end
@@ -604,7 +772,7 @@ a15.MouseButton1Click:Connect(function()
     end
 end)
 
--- 16. FARM
+-- FARM
 a16.MouseButton1Click:Connect(function()
     toggles.farm = not toggles.farm
     a16.Text = toggles.farm and "🤖 FARM [ON]" or "🤖 FARM [OFF]"
@@ -626,6 +794,7 @@ end)
 -- ========== ARRASTAR ==========
 local drag = false
 local start, pos
+
 main.InputBegan:Connect(function(i)
     if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
         drag = true
@@ -633,11 +802,13 @@ main.InputBegan:Connect(function(i)
         pos = main.Position
     end
 end)
+
 main.InputEnded:Connect(function(i)
     if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
         drag = false
     end
 end)
+
 UserInputService.InputChanged:Connect(function(i)
     if drag and (i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseMovement) then
         local d = i.Position - start
@@ -647,6 +818,11 @@ end)
 
 -- ========== ABRIR/FECHAR ==========
 fb.MouseButton1Click:Connect(function()
+    main.Visible = not main.Visible
+    fb.Visible = true
+end)
+
+fb.TouchTap:Connect(function()
     main.Visible = not main.Visible
     fb.Visible = true
 end)
@@ -661,6 +837,7 @@ UserInputService.InputBegan:Connect(function(i, p)
     if i.KeyCode == Enum.KeyCode.F then a10.MouseButton1Click:Fire() end
     if i.KeyCode == Enum.KeyCode.G then a12.MouseButton1Click:Fire() end
     if i.KeyCode == Enum.KeyCode.K then a3.MouseButton1Click:Fire() end
+    if i.KeyCode == Enum.KeyCode.L then a2.MouseButton1Click:Fire() end
 end)
 
 -- ========== ANTI-FALL ==========
@@ -670,44 +847,45 @@ spawn(function()
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("HumanoidRootPart") then
             local hrp = char.HumanoidRootPart
-            if hrp.Position.Y < -50 then
-                hrp.Position = Vector3.new(0, 150, 0)
+            if hrp.Position.Y < -100 then
+                hrp.Position = Vector3.new(0, 200, 0)
             end
         end
     end
 end)
 
--- ========== STATUS ==========
+-- ========== STATUS BAR ==========
 local st = Instance.new("Frame")
-st.Size = UDim2.new(0.25, 0, 0, 25)
-st.Position = UDim2.new(0.37, 0, 0.01, 0)
+st.Size = UDim2.new(0.35, 0, 0, 28)
+st.Position = UDim2.new(0.32, 0, 0.01, 0)
 st.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 st.BackgroundTransparency = 0.4
 st.BorderSizePixel = 1
 st.BorderColor3 = Color3.fromRGB(0, 255, 100)
 st.Parent = sg
 st.ZIndex = 998
+Instance.new("UICorner").CornerRadius = UDim.new(0, 8)
 Instance.new("UICorner").Parent = st
 
 local stxt = Instance.new("TextLabel")
 stxt.Size = UDim2.new(1, 0, 1, 0)
 stxt.BackgroundTransparency = 1
-stxt.Text = "🔥 ULTRA"
+stxt.Text = "🎯 AJUSTÁVEL " .. (isMobile and "📱" or "💻")
 stxt.TextColor3 = Color3.fromRGB(0, 255, 100)
 stxt.Font = Enum.Font.GothamBold
-stxt.TextSize = 13
+stxt.TextSize = 12
 stxt.Parent = st
 
 -- ========== MENSAGEM ==========
 print("========================================")
-print("🔥 SCRIPT ULTRA COMPACTO CARREGADO!")
+print("🎯 SCRIPT AJUSTÁVEL CARREGADO!")
 print("========================================")
-print("📱 PAINEL PEQUENO E PODEROSO")
-print("⚡ FUNÇÕES EXTREMAS:")
-print("  🎯 AIMBOT | 💀 KILL | 🔫 AMMO")
-print("  📦 ESP | 👻 INVIS | 🌙 NIGHT")
-print("  💨 SPEED | ⚡ JUMP | 🌊 FLY")
-print("  🛡️ GOD | ❄️ FREEZE | 🤖 FARM")
-print("========================================")
-print("⌨️  F5=Menu  F=Fly  G=God  K=Kill")
-print("========================================")
+print("📱 " .. (isMobile and "MODO MOBILE" or "MODO PC"))
+print("")
+print("🔧 SLIDERS DISPONÍVEIS:")
+print("  🎯 ALCANCE: 50-2000")
+print("  🔄 SUAVIDADE: 1-100")
+print("  💨 VELOCIDADE: 50-5000")
+print("  🌊 VEL. VOO: 10-500")
+print("")
+print("⌨️  F5=Menu  F=Fly  G=God  K=Kill  L=Lock
